@@ -82,6 +82,14 @@ public class UserServiceImple implements UserService {
     }
 
     @Override
+    public void deleteUser(String userId) {
+        UserEntity userEntity=userRepository.findByUserId(userId);
+        if(userEntity==null) throw new UserServiceException("User with id " + userId + " not found!!");
+
+        userRepository.delete(userEntity);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);
 
