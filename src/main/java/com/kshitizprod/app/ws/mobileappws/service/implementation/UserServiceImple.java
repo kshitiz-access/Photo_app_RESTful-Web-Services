@@ -1,10 +1,12 @@
 package com.kshitizprod.app.ws.mobileappws.service.implementation;
 
+import com.kshitizprod.app.ws.mobileappws.exceptions.UserServiceException;
 import com.kshitizprod.app.ws.mobileappws.io.repositories.UserRepository;
 import com.kshitizprod.app.ws.mobileappws.io.entity.UserEntity;
 import com.kshitizprod.app.ws.mobileappws.service.UserService;
 import com.kshitizprod.app.ws.mobileappws.shared.dto.UserDto;
 import com.kshitizprod.app.ws.mobileappws.shared.dto.Utils;
+import com.kshitizprod.app.ws.mobileappws.ui.model.response.ErrorMessages;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -67,6 +69,19 @@ public class UserServiceImple implements UserService {
     }
 
     @Override
+    public UserDto updateUser(String userId, UserDto user) {
+        UserDto returnValue=new UserDto();
+        UserEntity userEntity=userRepository.findByUserId(userId);
+        if(userEntity==null) throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+
+        userEntity.setFirstName(user.getFirstName());
+        userEntity.setLastName(user.getLastName());
+       UserEntity updatedUserDetails = userRepository.save(userEntity);
+        BeanUtils.copyProperties(updatedUserDetails,returnValue);
+        return returnValue;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);
 
@@ -77,4 +92,5 @@ public class UserServiceImple implements UserService {
                 new ArrayList<>());
 
     }
+
 }
